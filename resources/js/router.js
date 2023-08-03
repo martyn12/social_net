@@ -2,14 +2,16 @@ import {createRouter, createWebHistory} from "vue-router";
 
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/index',
+            name: 'index',
             component: () => import('./views/Index.vue')
         },
         {
             path: '/random',
+            name: 'random',
             component: () => import('./views/Random.vue')
         },
         {
@@ -25,7 +27,12 @@ const router = createRouter({
         {
             path: '/personal',
             name: 'user.personal',
-            component: () => import('./views/user/Personal.vue')
+            component: () => import('./views/user/Personal.vue'),
+        },
+        {
+            path: '/post/create',
+            name: 'user.post.create',
+            component: () => import('./views/user/post/Create.vue')
         }
     ]
 })
