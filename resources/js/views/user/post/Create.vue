@@ -11,16 +11,18 @@
         <div class="flex justify-between">
             <div class="mt-3">
                 <input ref="file" type="file" @change="uploadImage" hidden>
-                <a href="#" class="mt-2 w-36 p-1.5 border-blue-400 rounded-3xl bg-blue-400 text-white"
+                <a href="#" class="mt-2 w-36 p-1.5 border border-blue-400 rounded-3xl bg-blue-400
+                text-white hover:bg-white hover:text-blue-400 hover:border-blue-400"
                    @click.prevent="selectFile">Choose Image</a>
                 <div v-if="preview" class="mt-4">
                     <img :src="preview" alt="">
-                    <button @click.prevent="removePreview" class="mt-5 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white">Remove</button>
+                    <a href="#" @click.prevent="removePreview" class="underline text-blue-600">Cancel</a>
                 </div>
             </div>
             <div class="">
                 <button @click.prevent="store"
-                    class="mt-2 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white hover:bg-white hover:text-blue-400 hover:border-blue-400">
+                    class="mt-2 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white
+                    hover:bg-white hover:text-blue-400 hover:border-blue-400">
                     Publish
                 </button>
             </div>
@@ -41,7 +43,7 @@ export default {
             title: '',
             content: '',
             preview: null,
-            image: null
+            image: ''
         }
     },
 
@@ -73,7 +75,11 @@ export default {
             formData.append('content', this.content);
             axios.post('/api/post', formData)
                 .then( res => {
-                    console.log(res);
+                    this.title = ''
+                    this.content = ''
+                    this.image = null
+                    this.preview = null
+                    this.$router.push({name: 'user.personal'})
                 })
                 .catch(err => {
                     console.log(err);
