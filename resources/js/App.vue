@@ -1,6 +1,7 @@
 <template>
 <div class="flex justify-between p-8 w-96 mx-auto">
     <router-link :to="{name: 'user.login'}" v-if="!token">Login</router-link>
+    <router-link :to="{name: 'users'}" v-if="token">Users</router-link>
     <a href="#" @click.prevent="logout" v-if="token">Logout</a>
     <router-link :to="{name: 'index'}" v-if="token">index</router-link>
     <router-link :to="{name: 'random'}" v-if="token">random</router-link>
