@@ -1,12 +1,14 @@
 <template>
     <div v-if="users" class="block p-8 w-96 mx-auto">
         <div v-for="user in users" class="my-10 block border-b border-neutral-300 p-3 shadow rounded-b-xl">
-            <h3 class="text-2xl my-3">
-                {{ user.name }}
-            </h3>
-            <p>
-                {{ user.email }}
-            </p>
+            <router-link :to="{name: 'user.posts', params: {id: user.id}}">
+                <h3 class="text-2xl my-3">
+                    {{ user.name }}
+                </h3>
+                <p>
+                    {{ user.email }}
+                </p>
+            </router-link>
         </div>
     </div>
 </template>
@@ -30,7 +32,7 @@ export default {
     methods: {
         getUsers() {
             axios.get('/api/users')
-                .then( res => {
+                .then(res => {
                     this.users = res.data.data
                 })
         }

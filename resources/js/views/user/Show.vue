@@ -1,10 +1,8 @@
 <template>
     <div class="block p-8 w-1/3 mx-auto">
-        <div
-            class="ml-48 bg-blue-400 p-2 border border-blue-400 rounded-3xl text-white w-36
-            text-center hover:bg-white hover:text-blue-400 hover:border-blue-400">
-            <router-link :to="{name: 'user.post.create'}">Create a post</router-link>
-        </div>
+        <h2 v-if="posts.length === 0" class="text-center text-2xl">
+            {{userName}} еще ничего не запостил
+        </h2>
         <Posts v-for="post in posts" :post="post"></Posts>
     </div>
 </template>
@@ -18,7 +16,9 @@ export default {
     data() {
         return {
             token: null,
-            posts: []
+            posts: [],
+            userId: this.$route.params.id,
+            userName: ''
         }
     },
 
@@ -29,6 +29,7 @@ export default {
     mounted() {
         this.getPosts()
         this.getToken()
+        this.getUser()
     },
 
     methods: {
@@ -37,9 +38,16 @@ export default {
         },
 
         getPosts() {
-            axios.get('/api/post')
+            axios.get(`/api/users/${this.userId}/posts`)
                 .then( res => {
                     this.posts = res.data.data
+                })
+        },
+
+        getUser() {
+            axios.get(`/api/users/${this.userId}`)
+                .then( res => {
+                    this.userName = res.data
                 })
         }
     },

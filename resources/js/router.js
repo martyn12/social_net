@@ -27,7 +27,12 @@ const router = createRouter({
         {
             path: '/users',
             name: 'users',
-            component: () => import('./views/user/Users.vue')
+            component: () => import('./views/user/Index.vue')
+        },
+        {
+            path: '/users/:id/posts',
+            name: 'user.posts',
+            component: () => import('./views/user/Show.vue')
         },
         {
             path: '/personal',
