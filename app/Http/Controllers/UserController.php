@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Post\PostResource;
 use App\Http\Resources\User\UserResource;
+use App\Models\Post;
 use App\Models\SubscriberFollowing;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -27,9 +28,9 @@ class UserController extends Controller
 
     public function follow(User $user)
     {
-       $followed_user = auth()->user()->followed()->toggle($user->id);
+       $followingUser = auth()->user()->followed()->toggle($user->id);
 
-       $data['is_followed'] = count($followed_user['attached']) > 0;
+       $data['is_followed'] = count($followingUser['attached']) > 0;
 
        return $data;
     }
@@ -42,6 +43,16 @@ class UserController extends Controller
     public function post(User $user)
     {
         $posts = $user->posts()->orderBy('updated_at', 'DESC')->get();
+        return PostResource::collection($posts);
+    }
+
+    public function feed()
+    {
+        $followingIds = SubscriberFollowing::where('subscriber_id', auth()->id())->get('following_id')
+            ->pluck('following_id')->toArray();
+
+        $posts = Post::whereIn('user_id', $followingIds)->latest()->get();
+
         return PostResource::collection($posts);
     }
 }

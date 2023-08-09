@@ -3,8 +3,7 @@
 <!--    <router-link :to="{name: 'user.login'}" v-if="!token">Login</router-link>-->
     <router-link :to="{name: 'users'}" v-if="token">Users</router-link>
     <a href="#" @click.prevent="logout" v-if="token">Logout</a>
-    <router-link :to="{name: 'index'}" v-if="token">index</router-link>
-    <router-link :to="{name: 'random'}" v-if="token">random</router-link>
+    <router-link :to="{name: 'user.feed'}" v-if="token">feed</router-link>
     <router-link :to="{name: 'user.personal'}" v-if="token">personal</router-link>
 </div>
     <router-view></router-view>
