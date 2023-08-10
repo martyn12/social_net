@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Post\PostResource;
 use App\Http\Resources\User\UserResource;
+use App\Models\LikedPost;
 use App\Models\Post;
 use App\Models\SubscriberFollowing;
 use App\Models\User;
@@ -43,6 +44,8 @@ class UserController extends Controller
     public function post(User $user)
     {
         $posts = $user->posts()->orderBy('updated_at', 'DESC')->get();
+
+        $this->checkPostIsLiked($posts);
         return PostResource::collection($posts);
     }
 
@@ -53,6 +56,21 @@ class UserController extends Controller
 
         $posts = Post::whereIn('user_id', $followingIds)->latest()->get();
 
+        $this->checkPostIsLiked($posts);
+
         return PostResource::collection($posts);
+    }
+
+    public function checkPostIsLiked($posts)
+    {
+        $likedPostsIds = LikedPost::where('user_id', auth()->id())->get('post_id')->pluck('post_id')->toArray();
+
+        foreach ($posts as $post) {
+            if (in_array($post->id, $likedPostsIds)) {
+                $post->is_liked = true;
+            }
+        }
+
+        return $posts;
     }
 }

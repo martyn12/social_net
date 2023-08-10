@@ -10,7 +10,7 @@
                 </p>
             </router-link>
             <div>
-                <a @click.prevent="toggle(user)" href="#"
+                <a @click.prevent="follow(user)" href="#"
                    :class="['mt-2 w-64 py-2 px-7 border border-blue-400 rounded-3xl',
                     user.is_followed ? 'bg-white text-blue-400' : 'bg-blue-400 text-white']">
                     {{user.is_followed ? 'Unfollow' : 'Follow'}}</a>
@@ -43,7 +43,7 @@ export default {
                 })
         },
 
-        toggle(user) {
+        follow(user) {
             axios.get(`/api/users/${user.id}/follow`)
                 .then( res => {
                     user.is_followed = res.data.is_followed;

@@ -11,6 +11,8 @@ class Post extends Model
 
     protected $guarded = false;
 
+    protected $with = ['likes'];
+
     public function getImageAttribute()
     {
         $image_path = $this->image_path ?? null;
@@ -24,5 +26,10 @@ class Post extends Model
     public function getDateAttribute()
     {
         return $this->updated_at->diffForHumans();
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(LikedPost::class, 'post_id', 'id');
     }
 }

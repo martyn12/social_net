@@ -38,7 +38,7 @@ export default {
 
         getPosts() {
             axios.get('/api/post')
-                .then( res => {
+                .then(res => {
                     this.posts = res.data.data
                 })
         }
