@@ -15,8 +15,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::whereNot('id', auth()->id())->get();
-        $followingIds = SubscriberFollowing::where('subscriber_id', auth()->id())->get('following_id')
-            ->pluck('following_id')->toArray();
+        $followingIds = $this->getFollowingIds();
 
         foreach ($users as $user) {
             if (in_array($user->id, $followingIds)) {
@@ -51,19 +50,18 @@ class UserController extends Controller
 
     public function feed()
     {
-        $followingIds = SubscriberFollowing::where('subscriber_id', auth()->id())->get('following_id')
-            ->pluck('following_id')->toArray();
+        $followingIds = $this->getFollowingIds();
 
-        $posts = Post::whereIn('user_id', $followingIds)->latest()->get();
+        $likedPostsIds = $this->getLikedPostsIds();
 
-        $this->checkPostIsLiked($posts);
+        $posts = Post::whereIn('user_id', $followingIds)->whereNotIn('id', $likedPostsIds)->latest()->get();
 
         return PostResource::collection($posts);
     }
 
     public function checkPostIsLiked($posts)
     {
-        $likedPostsIds = LikedPost::where('user_id', auth()->id())->get('post_id')->pluck('post_id')->toArray();
+        $likedPostsIds = $this->getLikedPostsIds();
 
         foreach ($posts as $post) {
             if (in_array($post->id, $likedPostsIds)) {
@@ -72,5 +70,16 @@ class UserController extends Controller
         }
 
         return $posts;
+    }
+
+    public function getFollowingIds()
+    {
+        return SubscriberFollowing::where('subscriber_id', auth()->id())->get('following_id')
+            ->pluck('following_id')->toArray();
+    }
+
+    public function getLikedPostsIds()
+    {
+        return LikedPost::where('user_id', auth()->id())->get('post_id')->pluck('post_id')->toArray();
     }
 }

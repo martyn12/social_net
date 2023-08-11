@@ -38,7 +38,7 @@ export default {
 
     methods: {
         like(post) {
-            axios.get(`api/posts/${post.id}/like`)
+            axios.get(`/api/posts/${post.id}/like`)
                 .then( res => {
                     post.is_liked = res.data.is_liked;
                     post.likes = res.data.likes;
