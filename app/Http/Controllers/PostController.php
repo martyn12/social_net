@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Post\CommentRequest;
+use App\Http\Requests\Post\RepostRequest;
 use App\Http\Requests\Post\StoreRequest;
+use App\Http\Resources\Comment\CommentResource;
 use App\Http\Resources\Post\PostResource;
+use App\Http\Resources\Post\RepostedResource;
+use App\Models\Comment;
 use App\Models\LikedPost;
 use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +45,17 @@ class PostController extends Controller
         return new PostResource($post);
     }
 
+    public function repost(RepostRequest $request, Post $post)
+    {
+        $data = $request->validated();
+
+        $data['reposted_id'] = $post->id;
+        $data['user_id'] = auth()->id();
+
+        Post::create($data);
+
+    }
+
     public function like(Post $post)
     {
         $likedPosts = auth()->user()->likedPosts()->toggle($post->id);
@@ -48,5 +64,14 @@ class PostController extends Controller
         $data['likes'] = $post->likes()->count();
 
         return $data;
+    }
+
+    public function comment(CommentRequest $request, Post $post)
+    {
+        $data = $request->validated();
+
+        $data['post_id'] = $post->id;
+        $data['user_id'] = auth()->id();
+        Comment::create($data);
     }
 }

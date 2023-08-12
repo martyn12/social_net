@@ -4,9 +4,19 @@
             <input type="text" placeholder="title" v-model="title"
                    class="border rounded-full border-stone-400 p-1 w-96">
         </div>
+        <div class="text-sm mb-3 text-red-500">
+            <p v-for="error in errors.title">
+                {{ error }}
+            </p>
+        </div>
         <div>
             <textarea type="text" placeholder="content" v-model="content"
                       class="mt-2 border rounded-3xl border-stone-400 p-1 w-96"></textarea>
+        </div>
+        <div class="text-sm mb-3 text-red-500">
+            <p v-for="error in errors.content">
+                {{ error }}
+            </p>
         </div>
         <div class="flex justify-between">
             <div class="mt-3">
@@ -21,7 +31,7 @@
             </div>
             <div class="">
                 <button @click.prevent="store"
-                    class="mt-2 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white
+                        class="mt-2 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white
                     hover:bg-white hover:text-blue-400 hover:border-blue-400">
                     Publish
                 </button>
@@ -43,7 +53,8 @@ export default {
             title: '',
             content: '',
             preview: null,
-            image: ''
+            image: '',
+            errors: []
         }
     },
 
@@ -74,16 +85,18 @@ export default {
             formData.append('title', this.title);
             formData.append('content', this.content);
             axios.post('/api/post', formData)
-                .then( res => {
+                .then(res => {
                     this.title = ''
                     this.content = ''
                     this.image = null
                     this.preview = null
                     this.$router.push({name: 'user.personal'})
                 })
-                .catch(err => {
-                    console.log(err);
-                })
+                .catch(e => {
+                        console.log(e);
+                        this.errors = e.response.data.errors
+                    }
+                )
         }
     }
 }

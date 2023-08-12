@@ -19,12 +19,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('/posts/{post}/like', [\App\Http\Controllers\PostController::class, 'like']);
+    Route::post('/posts/{post}/like', [\App\Http\Controllers\PostController::class, 'like']);
+    Route::post('/posts/{post}/repost', [\App\Http\Controllers\PostController::class, 'repost']);
+    Route::post('/posts/{post}/comment', [\App\Http\Controllers\PostController::class, 'comment']);
     Route::apiResource('post', \App\Http\Controllers\PostController::class);
 
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index']);
     Route::get('/users/{user}/posts', [\App\Http\Controllers\UserController::class, 'post']);
     Route::get('/users/{user}', [\App\Http\Controllers\UserController::class, 'getName']);
-    Route::get('/users/{user}/follow', [\App\Http\Controllers\UserController::class, 'follow']);
+    Route::post('/users/{user}/follow', [\App\Http\Controllers\UserController::class, 'follow']);
     Route::get('/feed', [\App\Http\Controllers\UserController::class, 'feed']);
 });

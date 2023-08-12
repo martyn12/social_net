@@ -44,7 +44,7 @@ export default {
         },
 
         follow(user) {
-            axios.get(`/api/users/${user.id}/follow`)
+            axios.post(`/api/users/${user.id}/follow`)
                 .then( res => {
                     user.is_followed = res.data.is_followed;
                 })

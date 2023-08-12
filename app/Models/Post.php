@@ -11,7 +11,7 @@ class Post extends Model
 
     protected $guarded = false;
 
-    protected $with = ['likes'];
+    protected $with = ['likes', 'comments'];
 
     public function getImageAttribute()
     {
@@ -31,5 +31,15 @@ class Post extends Model
     public function likes()
     {
         return $this->hasMany(LikedPost::class, 'post_id', 'id');
+    }
+
+    public function repostedPost()
+    {
+        return $this->belongsTo(Post::class, 'reposted_id', 'id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'post_id', 'id');
     }
 }
