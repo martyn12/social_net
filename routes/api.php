@@ -22,6 +22,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/posts/{post}/like', [\App\Http\Controllers\PostController::class, 'like']);
     Route::post('/posts/{post}/repost', [\App\Http\Controllers\PostController::class, 'repost']);
     Route::post('/posts/{post}/comment', [\App\Http\Controllers\PostController::class, 'comment']);
+    Route::get('/posts/{post}/comment', [\App\Http\Controllers\PostController::class, 'getComments']);
     Route::apiResource('post', \App\Http\Controllers\PostController::class);
 
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index']);

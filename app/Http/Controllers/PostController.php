@@ -20,7 +20,6 @@ class PostController extends Controller
     {
         $posts = Post::where('user_id', auth()->id())->latest()->get();
         $likedPostsIds = LikedPost::where('user_id', auth()->id())->get('post_id')->pluck('post_id')->toArray();
-
         foreach ($posts as $post) {
             if (in_array($post->id, $likedPostsIds)) {
                 $post->is_liked = true;
@@ -52,7 +51,9 @@ class PostController extends Controller
         $data['reposted_id'] = $post->id;
         $data['user_id'] = auth()->id();
 
-        Post::create($data);
+        $post = Post::create($data);
+
+        return new PostResource($post);
 
     }
 
@@ -72,6 +73,15 @@ class PostController extends Controller
 
         $data['post_id'] = $post->id;
         $data['user_id'] = auth()->id();
-        Comment::create($data);
+        $comment = Comment::create($data);
+
+        return new CommentResource($comment);
+    }
+
+    public function getComments(Post $post)
+    {
+        $comments = $post->comments()->latest()->get();
+
+        return CommentResource::collection($comments);
     }
 }

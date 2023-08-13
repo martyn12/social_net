@@ -1,5 +1,5 @@
 <template>
-    <div class="my-10 block border border-neutral-300 p-3 rounded-3xl bg-zinc-100">
+    <div class="my-10 block border border-neutral-100 p-3 rounded-3xl shadow">
         <div class="py-4 text-right text-sm">
             {{ post.date }}
         </div>
@@ -44,7 +44,7 @@
                     <svg @click.prevent="openRepostForm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                          stroke-width="1.5"
                          stroke="currentColor"
-                         :class="['w-6 h-6 stroke-sky-600 cursor-pointer hover:fill-sky-600', post.is_reposted ? 'fill-sky-600' : 'fill-none']">
+                         :class="['w-6 h-6 stroke-sky-600 cursor-pointer hover:fill-sky-600', post.isReposted ? 'fill-sky-600' : 'fill-none']">
                         <path stroke-linecap="round" stroke-linejoin="round"
                               d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
                     </svg>
@@ -55,21 +55,28 @@
                 </div>
 
                 <div class="flex mr-4">
-                    <svg @click.prevent="openCommentForm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    <svg v-if="!isComment" @click.prevent="getComments(post)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                          stroke-width="1.5" stroke="currentColor"
-                         :class="['w-6 h-6 stroke-sky-600 cursor-pointer hover:fill-sky-600', post.is_reposted ? 'fill-sky-600' : 'fill-none']">
+                         class="w-6 h-6 stroke-sky-600 cursor-pointer hover:fill-sky-600 fill-none">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+                    </svg>
+                    <svg v-if="isComment" @click.prevent="this.isComment = false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         stroke-width="1.5" stroke="currentColor"
+                         class="w-6 h-6 stroke-sky-600 cursor-pointer hover:fill-sky-600 fill-none">
                         <path stroke-linecap="round" stroke-linejoin="round"
                               d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
                     </svg>
 
+
                     <p class="ml-2">
-                        {{ 0 }}
+                        {{ post.comments_count }}
                     </p>
                 </div>
 
             </div>
         </div>
-        <div v-if="is_repost" class="p-4">
+        <div v-if="isRepost" class="p-4">
             <div>
                 <input type="text" placeholder="title" v-model="title"
                        class="border rounded-full border-stone-400 p-1 w-96">
@@ -96,7 +103,7 @@
                 </button>
             </div>
         </div>
-        <div v-if="is_comment" class="p-4">
+        <div class="mt-4">
             <div>
                 <input type="text" placeholder="comment here" v-model="comment_body"
                        class="border rounded-full border-stone-400 p-1 w-96">
@@ -106,26 +113,38 @@
                     {{ error }}
                 </p>
             </div>
-            <div>
-                <button @click.prevent="comment(post)"
-                        class="mt-2 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white
+        </div>
+        <div>
+            <button @click.prevent="comment(post)"
+                    class="mt-2 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white
                     hover:bg-white hover:text-blue-400 hover:border-blue-400">
-                    Comment
-                </button>
+                Comment
+            </button>
+        </div>
+        <div v-if="isComment" class="p-4">
+            <div v-if="this.comments.length > 0" class="mb-4">
+                <div v-for="comment in this.comments">
+                    <div class="mb-5 p-3 shadow shadow-gray-200 rounded-2xl">
+                        <div class="w-52 flex justify-between">
+                            <div class="text-lg mb-2">
+                                <router-link to="">
+                                    {{ comment.user.name }}
+                                </router-link>
+                            </div>
+                            <p class="text-sm text-right">
+                                {{ comment.date }}
+                            </p>
+                        </div>
+                        <p>
+                            {{ comment.body }}
+                        </p>
+                    </div>
+
+                </div>
             </div>
         </div>
 
-        <div v-if="post.comments" v-for="comment in post.comments">
-            <div class="py-4 text-right text-sm">
-                {{ comment.date }}
-            </div>
-            <a href="#" class="text-ml my-2">
-                {{ comment.username }}
-            </a>
-            <p>
-                {{ comment.body }}
-            </p>
-        </div>
+
     </div>
 </template>
 
@@ -142,12 +161,13 @@ export default {
         return {
             title: '',
             content: '',
-            is_repost: false,
-            is_comment: false,
-            is_reposted: false,
+            isRepost: false,
+            isComment: false,
+            isReposted: false,
             reposts: null,
             comment_body: '',
-            errors: []
+            errors: [],
+            comments: []
         }
     },
 
@@ -162,8 +182,8 @@ export default {
 
         openRepostForm() {
             if (this.$route.name !== 'user.personal') {
-                this.is_repost = !this.is_repost
-                this.is_comment = false
+                this.isRepost = !this.isRepost
+                this.isComment = false
             }
         },
 
@@ -173,33 +193,41 @@ export default {
                     title: this.title,
                     content: this.content
                 }).then(res => {
-                this.is_reposted = res.data.is_reposted
+                this.isReposted = res.data.isReposted
                 this.reposts = res.data.reposts
                 this.title = ''
                 this.content = ''
-                this.is_repost = false
+                this.isRepost = false
             }).catch(e => {
                 this.errors = e.response.data.errors;
             })
         },
 
-        openCommentForm() {
-            this.is_comment = !this.is_comment
-            this.is_repost = false
-        },
+        // openCommentForm() {
+        //     this.isComment = !this.isComment
+        //     this.isRepost = false
+        // },
 
         comment(post) {
             axios.post(`/api/posts/${post.id}/comment`,
                 {
                     body: this.comment_body
                 }).then(res => {
-                this.is_comment = false
                 this.comment_body = ''
-                console.log(res);
-            }).catch( e => {
+                this.getComments(post)
+                post.comments_count++
+            }).catch(e => {
                 this.errors = e.response.data.errors
             })
-        }
+        },
+
+        getComments(post) {
+            axios.get(`/api/posts/${post.id}/comment`)
+                .then(res => {
+                    this.isComment = true
+                    this.comments = res.data.data
+                })
+        },
     }
 }
 </script>

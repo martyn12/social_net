@@ -11,7 +11,10 @@ class Post extends Model
 
     protected $guarded = false;
 
-    protected $with = ['likes', 'comments'];
+    protected $with = ['likes'];
+    protected $withCount = ['likes', 'comments',];
+
+
 
     public function getImageAttribute()
     {
