@@ -1,5 +1,6 @@
 <template>
     <div class="block p-8 w-1/3 mx-auto">
+    <Stat :stat="stats"></Stat>
         <h2 v-if="posts.length === 0" class="text-center text-2xl">
             {{userName}} еще ничего не запостил
         </h2>
@@ -10,6 +11,7 @@
 <script>
 import axios from "axios";
 import Posts from "@/views/components/Posts.vue";
+import Stat from "@/views/components/Stat.vue";
 
 export default {
     name: "Personal",
@@ -18,18 +20,21 @@ export default {
             token: null,
             posts: [],
             userId: this.$route.params.id,
-            userName: ''
+            userName: '',
+            stats: []
         }
     },
 
     components: {
-        Posts
+        Posts,
+        Stat
     },
 
     mounted() {
         this.getPosts()
         this.getToken()
         this.getUser()
+        this.getStats()
     },
 
     methods: {
@@ -49,6 +54,14 @@ export default {
                 .then( res => {
                     this.userName = res.data
                 })
+        },
+
+        getStats() {
+            axios.post('/api/users/stats', {
+                user_id: this.userId
+            }).then( res => {
+                this.stats = res.data.data
+            })
         }
     },
 

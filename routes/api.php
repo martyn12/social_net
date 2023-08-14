@@ -26,6 +26,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('post', \App\Http\Controllers\PostController::class);
 
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index']);
+    Route::post('/users/stats', [\App\Http\Controllers\UserController::class, 'stat']);
     Route::get('/users/{user}/posts', [\App\Http\Controllers\UserController::class, 'post']);
     Route::get('/users/{user}', [\App\Http\Controllers\UserController::class, 'getName']);
     Route::post('/users/{user}/follow', [\App\Http\Controllers\UserController::class, 'follow']);
