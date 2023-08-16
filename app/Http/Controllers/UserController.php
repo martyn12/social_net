@@ -5,35 +5,28 @@ namespace App\Http\Controllers;
 use App\Http\Requests\User\StatRequest;
 use App\Http\Resources\Post\PostResource;
 use App\Http\Resources\User\UserResource;
-use App\Models\LikedPost;
-use App\Models\Post;
-use App\Models\SubscriberFollowing;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
+    protected $service;
+
+    public function __construct(UserService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $users = User::whereNot('id', auth()->id())->get();
-        $followingIds = $this->getFollowingIds();
-
-        foreach ($users as $user) {
-            if (in_array($user->id, $followingIds)) {
-                $user->is_followed = true;
-            }
-        }
+        $users = $this->service->index();
 
         return UserResource::collection($users);
     }
 
     public function follow(User $user)
     {
-       $followingUser = auth()->user()->followed()->toggle($user->id);
-
-       $data['is_followed'] = count($followingUser['attached']) > 0;
-
-       return $data;
+        return $this->service->follow($user);
     }
 
     public function getName(User $user)
@@ -43,59 +36,21 @@ class UserController extends Controller
 
     public function post(User $user)
     {
-        $posts = $user->posts()->orderBy('updated_at', 'DESC')->get();
-
-        $this->checkPostIsLiked($posts);
+        $posts = $this->service->post($user);
         return PostResource::collection($posts);
     }
 
     public function feed()
     {
-        $followingIds = $this->getFollowingIds();
-
-        $likedPostsIds = $this->getLikedPostsIds();
-
-        $posts = Post::whereIn('user_id', $followingIds)->whereNotIn('id', $likedPostsIds)->latest()->get();
+        $posts = $this->service->feed();
 
         return PostResource::collection($posts);
-    }
-
-    public function checkPostIsLiked($posts)
-    {
-        $likedPostsIds = $this->getLikedPostsIds();
-
-        foreach ($posts as $post) {
-            if (in_array($post->id, $likedPostsIds)) {
-                $post->is_liked = true;
-            }
-        }
-
-        return $posts;
-    }
-
-    public function getFollowingIds()
-    {
-        return SubscriberFollowing::where('subscriber_id', auth()->id())->get('following_id')
-            ->pluck('following_id')->toArray();
-    }
-
-    public function getLikedPostsIds()
-    {
-        return LikedPost::where('user_id', auth()->id())->get('post_id')->pluck('post_id')->toArray();
     }
 
     public function stat(StatRequest $request)
     {
         $data = $request->validated();
-        $userId = isset($data['user_id']) ? $data['user_id'] : auth()->id();
-
-        $resp = [];
-        $postsIds = Post::where('user_id', $userId)->get('id')->pluck('id')->toArray();
-
-        $resp['likes_count'] = LikedPost::whereIn('post_id', $postsIds)->count();
-        $resp['subscribers_count'] = SubscriberFollowing::where('following_id', $userId)->count();
-        $resp['follows_count'] = SubscriberFollowing::where('subscriber_id', $userId)->count();
-        $resp['posts_count'] = count($postsIds);
+        $resp = $this->service->stat($data);
 
         return response()->json(['data' => $resp]);
     }

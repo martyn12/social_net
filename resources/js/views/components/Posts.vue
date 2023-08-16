@@ -12,7 +12,7 @@
         <p>
             {{ post.content }}
         </p>
-        <div v-if="post.reposted_post" class="p-4 border border-neutral-300">
+        <div v-if="post.reposted_post" class="p-4 border border-neutral-300 rounded-3xl mt-4">
             <div class="py-4 text-right text-sm">
                 {{ post.reposted_post.date }}
             </div>

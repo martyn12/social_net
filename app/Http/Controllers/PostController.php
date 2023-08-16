@@ -7,24 +7,21 @@ use App\Http\Requests\Post\RepostRequest;
 use App\Http\Requests\Post\StoreRequest;
 use App\Http\Resources\Comment\CommentResource;
 use App\Http\Resources\Post\PostResource;
-use App\Http\Resources\Post\RepostedResource;
-use App\Models\Comment;
-use App\Models\LikedPost;
 use App\Models\Post;
-use Illuminate\Support\Facades\Storage;
+use App\Services\PostService;
 
 class PostController extends Controller
 {
+    protected $service;
+
+    public function __construct(PostService $service)
+    {
+        $this->service = $service;
+    }
 
     public function index()
     {
-        $posts = Post::where('user_id', auth()->id())->latest()->get();
-        $likedPostsIds = LikedPost::where('user_id', auth()->id())->get('post_id')->pluck('post_id')->toArray();
-        foreach ($posts as $post) {
-            if (in_array($post->id, $likedPostsIds)) {
-                $post->is_liked = true;
-            }
-        }
+        $posts = $this->service->index();
 
         return PostResource::collection($posts);
     }
@@ -32,26 +29,15 @@ class PostController extends Controller
     public function store(StoreRequest $request)
     {
         $data = $request->validated();
-        $image = $data['image'];
-        unset($data['image']);
-        if ($image) {
-            $image_path = md5($image->getClientOriginalName()) . '.' . $image->getClientOriginalExtension();
-            Storage::disk('public')->putFileAs('/images', $image, $image_path);
-            $data['image_path'] = $image_path;
-        }
-        $data['user_id'] = auth()->id();
-        $post = Post::create($data);
+        $post = $this->service->store($data);
+
         return new PostResource($post);
     }
 
     public function repost(RepostRequest $request, Post $post)
     {
         $data = $request->validated();
-
-        $data['reposted_id'] = $post->id;
-        $data['user_id'] = auth()->id();
-
-        $post = Post::create($data);
+        $post = $this->service->repost($data, $post);
 
         return new PostResource($post);
 
@@ -59,28 +45,20 @@ class PostController extends Controller
 
     public function like(Post $post)
     {
-        $likedPosts = auth()->user()->likedPosts()->toggle($post->id);
-
-        $data['is_liked'] = count($likedPosts['attached']) > 0;
-        $data['likes'] = $post->likes()->count();
-
-        return $data;
+        return $this->service->like($post);
     }
 
     public function comment(CommentRequest $request, Post $post)
     {
         $data = $request->validated();
-
-        $data['post_id'] = $post->id;
-        $data['user_id'] = auth()->id();
-        $comment = Comment::create($data);
+        $comment = $this->service->comment($data, $post);
 
         return new CommentResource($comment);
     }
 
     public function getComments(Post $post)
     {
-        $comments = $post->comments()->latest()->get();
+        $comments = $this->service->getComments($post);
 
         return CommentResource::collection($comments);
     }
