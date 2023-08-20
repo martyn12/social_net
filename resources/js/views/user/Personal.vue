@@ -19,7 +19,6 @@ export default {
     name: "Personal",
     data() {
         return {
-            token: null,
             posts: [],
             stats: []
         }
@@ -32,15 +31,10 @@ export default {
 
     mounted() {
         this.getPosts()
-        this.getToken()
         this.getStats()
     },
 
     methods: {
-        getToken() {
-            this.token = localStorage.getItem('x_xsrf_token')
-        },
-
         getPosts() {
             axios.get('/api/post')
                 .then(res => {

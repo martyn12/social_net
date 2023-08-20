@@ -29,7 +29,7 @@
                     <a href="#" @click.prevent="removePreview" class="underline text-blue-600">Cancel</a>
                 </div>
             </div>
-            <div class="">
+            <div>
                 <button @click.prevent="store"
                         class="mt-2 w-36 p-1 border border-blue-400 rounded-3xl bg-blue-400 text-white
                     hover:bg-white hover:text-blue-400 hover:border-blue-400">
@@ -42,12 +42,10 @@
 
 <script>
 
-import Index from "@/views/Index.vue";
 import axios from "axios";
 
 export default {
     name: "Create",
-    components: {Index},
     data() {
         return {
             title: '',

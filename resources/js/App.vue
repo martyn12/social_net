@@ -1,6 +1,5 @@
 <template>
 <div class="flex justify-between p-8 w-96 mx-auto">
-<!--    <router-link :to="{name: 'user.login'}" v-if="!token">Login</router-link>-->
     <router-link :to="{name: 'users'}" v-if="token">Users</router-link>
     <router-link :to="{name: 'user.feed'}" v-if="token">Feed</router-link>
     <router-link :to="{name: 'user.personal'}" v-if="token">Personal</router-link>

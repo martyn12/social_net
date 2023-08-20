@@ -5,16 +5,6 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/index',
-            name: 'index',
-            component: () => import('./views/Index.vue')
-        },
-        {
-            path: '/random',
-            name: 'random',
-            component: () => import('./views/Random.vue')
-        },
-        {
             path: '/login',
             name: 'user.login',
             component: () => import('./views/user/Login.vue')

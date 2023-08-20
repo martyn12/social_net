@@ -49,7 +49,6 @@ export default {
                     password_confirmation: this.password_confirmation,
                 })
                     .then(res => {
-                        console.log(res);
                         localStorage.setItem('x_xsrf_token', res.config.headers['X-XSRF-TOKEN'])
                         this.$router.push({name: 'user.personal'})
                     })

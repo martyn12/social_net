@@ -12,7 +12,6 @@ export default {
     name: "Personal",
     data() {
         return {
-            token: null,
             posts: [],
         }
     },
@@ -23,14 +22,9 @@ export default {
 
     mounted() {
         this.getPosts()
-        this.getToken()
     },
 
     methods: {
-        getToken() {
-            this.token = localStorage.getItem('x_xsrf_token')
-        },
-
         getPosts() {
             axios.get(`/api/feed`)
                 .then( res => {

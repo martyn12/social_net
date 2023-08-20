@@ -17,7 +17,6 @@ export default {
     name: "Personal",
     data() {
         return {
-            token: null,
             posts: [],
             userId: this.$route.params.id,
             userName: '',
@@ -32,15 +31,11 @@ export default {
 
     mounted() {
         this.getPosts()
-        this.getToken()
         this.getUser()
         this.getStats()
     },
 
     methods: {
-        getToken() {
-            this.token = localStorage.getItem('x_xsrf_token')
-        },
 
         getPosts() {
             axios.get(`/api/users/${this.userId}/posts`)

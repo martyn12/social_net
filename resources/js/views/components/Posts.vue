@@ -105,7 +105,7 @@
                 </button>
             </div>
         </div>
-        <div class="mt-4">
+        <div ref="comment" class="mt-4">
             <div v-if="parentId" class="text-sky-600 flex">
                 Answer to {{ commentToAnswer.user.name }}
                 <div class="cursor-pointer text-sky-600 ml-3 underline" @click="this.parentId = null">
@@ -139,7 +139,7 @@
                                     <p class="mr-5">
                                         {{ comment.user.name }}
                                     </p>
-                                    <p @click="setParentId(comment)" class="cursor-pointer text-sky-600">
+                                    <p @click="setParentIdAndGoTo(comment)" class="cursor-pointer text-sky-600">
                                         answer
                                     </p>
                                 </div>
@@ -218,6 +218,7 @@ export default {
                 this.title = ''
                 this.content = ''
                 this.isRepost = false
+                post.reposts++
             }).catch(e => {
                 this.errors = e.response.data.errors;
             })
@@ -247,9 +248,12 @@ export default {
                 })
         },
 
-        setParentId(comment) {
+        setParentIdAndGoTo(comment) {
             this.parentId = comment.id
             this.commentToAnswer = comment;
+            const elem = this.$refs['comment']
+            const top = elem.offsetTop
+            window.scrollTo(0, top)
         }
     }
 }
