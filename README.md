@@ -13,7 +13,7 @@
 
 1. Клонируйте репозиторий на свое устройство с помощью команды:
 ```
-git clone https://github.com/username/repository.git
+git clone https://github.com/martyn12/social_net.git
 ```
 2. Установите все необходимые зависимости, запустив команду:
 ```
